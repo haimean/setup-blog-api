@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,13 +29,12 @@ Route::prefix('admin')->controller(AuthController::class)->group(function () {
     Route::middleware('auth:api')->group(function () {
         Route::post('logout', 'logout');
         Route::get('me', 'me');
-        Route::prefix('brand')->controller(AdminBrandController::class)->group(function () {
-            Route::get('get-brands', 'getAllBrand');
-            Route::post('store', 'store');
-            Route::post('create', 'create');
+        Route::prefix('category')->controller(CategoryController::class)->group(function () {
+            Route::get('gets', 'index');
+            Route::post('create', 'store');
+            Route::put('update', 'update');
+            Route::delete('/{id}', 'destroy');
             Route::get('/{id}', 'show');
-            Route::post('update', 'update');
-            Route::delete('/{id}', 'delete');
         });
     });
 });
