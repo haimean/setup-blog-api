@@ -12,4 +12,9 @@ class Product extends Model
     {
         return $this->belongsToMany(Blog::class, 'map_blog_product');
     }
+
+    public function category()
+    {
+        return $this->hasOne(Category::class);
+    }
 }
