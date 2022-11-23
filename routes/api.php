@@ -55,16 +55,10 @@ Route::prefix('admin')->controller(AuthController::class)->group(function () {
     });
     Route::prefix('blog')->controller(BlogController::class)->group(function () {
         Route::get('gets', 'index');
-        Route::post('create', 'store');
-        Route::put('update', 'update');
-        Route::delete('/{id}', 'destroy');
         Route::get('/{id}', 'show');
     });
     Route::prefix('product')->controller(ProductController::class)->group(function () {
         Route::get('gets', 'index');
-        Route::post('create', 'store');
-        Route::put('update', 'update');
-        Route::delete('/{id}', 'destroy');
         Route::get('/{id}', 'show');
     });
 });
