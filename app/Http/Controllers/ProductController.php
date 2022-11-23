@@ -24,11 +24,7 @@ class ProductController extends Controller
             $data = Product::get();
             foreach ($data as $product) {
                 $product->category = Category::find($product->category_id);
-                // if (Storage::exists("images/product/$product->image_uuid.png")) {
-                $product->image = Storage::disk('s3')->temporaryUrl("images/product/$product->image_uuid.png", now()->addMinutes(20));
-
-                // $product->image = Storage::dick('s3')->url("images/product/$product->image_uuid.png");
-                // }
+                $product->image = Storage::disk('s3')->temporaryUrl("images/product/$product->id/$product->image_uuid.png", now()->addMinutes(20));
             }
             return response()->json($data);
         } catch (QueryException $e) {
@@ -67,9 +63,9 @@ class ProductController extends Controller
             $product->url = $request->url;
             $image = Image::make($request->image)->resize(1024, 1024)->encode('png');
             $uuid = Str::uuid();
-            Storage::disk('s3')->put("images/product/$uuid.png", $image->stream());
             $product->image_uuid = $uuid;
             $product->save();
+            Storage::disk('s3')->put("images/product/$product->id/$uuid.png", $image->stream());
             return response()->json(["Create Successfully!", 200]);
         } catch (QueryException $e) {
             return response()->json(["Something Went Wrong!", $e->getMessage(), 500]);
@@ -87,7 +83,7 @@ class ProductController extends Controller
         try {
             $data = Product::find($id);
             if ($data) {
-                $data->image = Storage::disk('s3')->temporaryUrl("images/product/$data->image_uuid.png", now()->addMinutes(20));
+                $data->image = Storage::disk('s3')->temporaryUrl("images/product/$data->id/$data->image_uuid.png", now()->addMinutes(20));
                 return response()->json($data);
             } else {
                 return response()->json(['Data Not found!', 404]);
@@ -132,10 +128,10 @@ class ProductController extends Controller
             $image = Image::make($request->image)->resize(1024, 1024)->encode('png');
             $uuidImage = Str::uuid();
             $oldUuidLogo = $product->image_uuid;
-            Storage::disk('s3')->put("images/product/$uuidImage.png", $image->stream());
+            Storage::disk('s3')->put("images/product/$product->id/$uuidImage.png", $image->stream());
             $product->image_uuid = $uuidImage;
             if ($oldUuidLogo) {
-                Storage::disk('s3')->delete("images/product/$oldUuidLogo.png");
+                Storage::disk('s3')->delete("images/product/$product->id/$oldUuidLogo.png");
             }
             $product->save();
         } catch (QueryException $e) {
@@ -156,7 +152,7 @@ class ProductController extends Controller
             if ($product) {
                 $oldUuidImage = $product->image_uuid;
                 if ($oldUuidImage) {
-                    Storage::disk('s3')->delete("images/product/$oldUuidImage.png");
+                    Storage::disk('s3')->delete("images/product/$product->id/$oldUuidImage.png");
                 }
                 $product->delete();
                 return response()->json(['Data Deleted Successfully!', 200]);

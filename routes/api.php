@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
@@ -44,6 +45,20 @@ Route::prefix('admin')->controller(AuthController::class)->group(function () {
             Route::delete('/{id}', 'destroy');
             Route::get('/{id}', 'show');
         });
+        Route::prefix('blog')->controller(BlogController::class)->group(function () {
+            Route::get('gets', 'index');
+            Route::post('create', 'store');
+            Route::put('update', 'update');
+            Route::delete('/{id}', 'destroy');
+            Route::get('/{id}', 'show');
+        });
+    });
+    Route::prefix('blog')->controller(BlogController::class)->group(function () {
+        Route::get('gets', 'index');
+        Route::post('create', 'store');
+        Route::put('update', 'update');
+        Route::delete('/{id}', 'destroy');
+        Route::get('/{id}', 'show');
     });
     Route::prefix('product')->controller(ProductController::class)->group(function () {
         Route::get('gets', 'index');

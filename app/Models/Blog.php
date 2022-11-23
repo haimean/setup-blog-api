@@ -11,6 +11,6 @@ class Blog extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'map_blog_product');
+        return $this->belongsToMany(Product::class, 'map_blog_product', 'blog_id', 'product_id');
     }
 }
