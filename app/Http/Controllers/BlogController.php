@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Blog;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -85,7 +86,24 @@ class BlogController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            $data = Blog::find($id);
+            if ($data) {
+                $data->products;
+                foreach ($data->products as $product) {
+                    $product->category
+                        = Category::find($product->category_id);;
+                    $product->image = Storage::disk('s3')->temporaryUrl("images/product/$product->id/$product->image_uuid.png", now()->addMinutes(20));
+                }
+                $data->category;
+                $data->image = Storage::disk('s3')->temporaryUrl("images/blog/$data->id/$data->image_uuid.png", now()->addMinutes(20));
+                return response()->json($data);
+            } else {
+                return response()->json(['Data Not found!', 404]);
+            }
+        } catch (QueryException $e) {
+            return response()->json(["Something Went Wrong!", $e->getMessage(), 500]);
+        }
     }
 
     /**
@@ -158,6 +176,21 @@ class BlogController extends Controller
                 $blog->delete();
                 return response()->json(['Data Deleted Successfully!', 200]);
             }
+        } catch (QueryException $e) {
+            return response()->json(["Something Went Wrong!", $e->getMessage(), 500]);
+        }
+    }
+
+    public function get($id)
+    {
+        // return response()->json($id);
+        try {
+            $data = Blog::where('category_id', $id)->get();
+            foreach ($data as $product) {
+                $product->category = Category::find($product->category_id);
+                $product->image = Storage::disk('s3')->temporaryUrl("images/product/$product->id/$product->image_uuid.png", now()->addMinutes(20));
+            }
+            return response()->json($data);
         } catch (QueryException $e) {
             return response()->json(["Something Went Wrong!", $e->getMessage(), 500]);
         }

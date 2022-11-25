@@ -83,6 +83,11 @@ class ProductController extends Controller
         try {
             $data = Product::find($id);
             if ($data) {
+                $data->blogs;
+                foreach ($data->blogs as $blog) {
+                    $blog->image = Storage::disk('s3')->temporaryUrl("images/blog/$blog->id/$blog->image_uuid.png", now()->addMinutes(20));
+                }
+                $data->category;
                 $data->image = Storage::disk('s3')->temporaryUrl("images/product/$data->id/$data->image_uuid.png", now()->addMinutes(20));
                 return response()->json($data);
             } else {
@@ -157,6 +162,21 @@ class ProductController extends Controller
                 $product->delete();
                 return response()->json(['Data Deleted Successfully!', 200]);
             }
+        } catch (QueryException $e) {
+            return response()->json(["Something Went Wrong!", $e->getMessage(), 500]);
+        }
+    }
+
+    public function getProduct($id)
+    {
+        // return response()->json($id);
+        try {
+            $data = Product::where('category_id', $id)->get();
+            foreach ($data as $product) {
+                $product->category = Category::find($product->category_id);
+                $product->image = Storage::disk('s3')->temporaryUrl("images/product/$product->id/$product->image_uuid.png", now()->addMinutes(20));
+            }
+            return response()->json($data);
         } catch (QueryException $e) {
             return response()->json(["Something Went Wrong!", $e->getMessage(), 500]);
         }

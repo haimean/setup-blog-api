@@ -53,12 +53,17 @@ Route::prefix('admin')->controller(AuthController::class)->group(function () {
             Route::get('/{id}', 'show');
         });
     });
-    Route::prefix('blog')->controller(BlogController::class)->group(function () {
-        Route::get('gets', 'index');
-        Route::get('/{id}', 'show');
-    });
-    Route::prefix('product')->controller(ProductController::class)->group(function () {
-        Route::get('gets', 'index');
-        Route::get('/{id}', 'show');
-    });
+});
+Route::prefix('blog')->controller(BlogController::class)->group(function () {
+    Route::get('gets', 'index');
+    Route::get('/{id}', 'show');
+});
+Route::prefix('category')->controller(CategoryController::class)->group(function () {
+    Route::get('gets', 'index');
+    Route::get('/{id}', 'show');
+});
+Route::prefix('product')->controller(ProductController::class)->group(function () {
+    Route::get('gets', 'index');
+    Route::get('/{id}', 'show');
+    Route::get('/category/{id}', 'getProduct');
 });
